@@ -2,13 +2,18 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const studentSchema = require("../schemas/studentSchema");
-const StudentLists = mongoose.model("studentCollection", studentSchema);
+const StudentsList = mongoose.model("studentCollection", studentSchema);
 
 router.get("/", async (req, res) => {
-  await StudentLists.find({}, (err, data) => {
+  const page = req.query.page;
+  const limit = req.query.limit;
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  await StudentsList.find({}, (err, data) => {
     if (!err) {
       res.status(200).json({
-        result: data,
+        result: data.slice(startIndex || 0, endIndex || 5),
       });
     } else {
       res.status(500).json({
@@ -19,7 +24,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/addStudent", async (req, res) => {
-  const newStudent = new StudentLists(req.body);
+  const newStudent = new StudentsList(req.body);
   await newStudent
     .save()
     .then((newStudentData) => {
@@ -34,8 +39,30 @@ router.post("/addStudent", async (req, res) => {
     });
 });
 
-router.put("/updateAll", async (req, res) => {
-  await StudentLists.find({ _id: { $in: req.body.ids } }, (err, data) => {
+router.put("/:id", async (req, res) => {
+  const studentId = req.params.id;
+  console.log(req.body);
+  const updatedData = req.body;
+  await StudentsList.findOneAndUpdate(
+    { _id: studentId },
+    updatedData,
+    { new: true },
+    (err, data) => {
+      if (err) {
+        res.json({
+          error: err.message,
+        });
+      } else {
+        res.json({
+          updatedResult: data,
+        });
+      }
+    }
+  ).clone();
+});
+
+router.put("/status/updateAll", async (req, res) => {
+  await StudentsList.find({ _id: { $in: req.body.ids } }, (err, data) => {
     if (!err) {
       for (let i = 0; i < data.length; i++) {
         data[i]?.status && data[i].status === "Active"
