@@ -4,13 +4,13 @@ const router = express.Router();
 const foodSchema = require("../schemas/foodSchema");
 const FoodItems = new mongoose.model("FoodCollection", foodSchema);
 
-router.get("/allFoods", async (req, res) => {
+router.get("/", (req, res) => {
   const page = req.query.page;
   const limit = req.query.limit;
   let startIndex = (page - 1) * limit;
   let endIndex = page * limit;
 
-  await FoodItems.find({}, (err, data) => {
+  FoodItems.find({}, (err, data) => {
     if (err) {
       res.status(500).json({
         error: err.message,
@@ -24,14 +24,14 @@ router.get("/allFoods", async (req, res) => {
   }).clone();
 });
 
-router.post("/addFood", async (req, res) => {
+router.post("/addFood", (req, res) => {
   const page = req.query.page;
   const limit = req.query.limit;
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
   const newFoodItem = new FoodItems(req.body);
 
-  await newFoodItem.save((err, data) => {
+  newFoodItem.save((err, data) => {
     if (err) {
       res.status(500).json({
         error: err.message,
@@ -53,11 +53,12 @@ router.post("/addFood", async (req, res) => {
   });
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", (req, res) => {
   const id = req.params.id;
   console.log(req.body);
   const updatedData = req.body;
-  await FoodItems.findOneAndUpdate(
+
+  FoodItems.findOneAndUpdate(
     { _id: id },
     updatedData,
     { new: true },
