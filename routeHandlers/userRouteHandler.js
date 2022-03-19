@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
         user[0].password
       );
       if (isValidPass) {
-        const token = await jwt.sign(
+        const token = jwt.sign(
           {
             userName: user[0].userName,
             userId: user[0]._id,
