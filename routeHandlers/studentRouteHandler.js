@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const studentSchema = require("../schemas/studentSchema");
-const checkAuthUser = require("./middleware/checkAuthUser");
+const checkAuthUser = require("../middleware/checkAuthUser");
 const StudentsList = mongoose.model("studentCollection", studentSchema);
 
 router.get("/", checkAuthUser, (req, res) => {
