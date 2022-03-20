@@ -24,12 +24,14 @@ app.get("/", (req, res) => {
   res.send("hello world");
 });
 
-function errorHandler(err, req, res, next) {
+const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
   }
   res.status(500).json("error", { error: err });
-}
+};
+
+app.use(errorHandler);
 
 app.listen(5000, () => {
   console.log("listening on port 5000");

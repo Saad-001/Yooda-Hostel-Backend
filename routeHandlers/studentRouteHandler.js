@@ -2,9 +2,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const studentSchema = require("../schemas/studentSchema");
+const checkAuthUser = require("./middleware/checkAuthUser");
 const StudentsList = mongoose.model("studentCollection", studentSchema);
 
-router.get("/", (req, res) => {
+router.get("/", checkAuthUser, (req, res) => {
   const page = req.query.page;
   const limit = req.query.limit;
   const startIndex = (page - 1) * limit;
